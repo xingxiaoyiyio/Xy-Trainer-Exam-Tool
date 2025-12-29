@@ -14,11 +14,27 @@ const App: React.FC = () => {
   const [currentModule, setCurrentModule] = useState<'home' | 'practice' | 'exam' | 'wrong' | 'random'>('home');
   const [stats, setStats] = useState<UserStats>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.STATS);
-    return saved ? JSON.parse(saved) : {
+    if (saved) {
+      try {
+        const parsedStats = JSON.parse(saved);
+        // 确保新字段存在，如果不存在则使用默认值
+        return {
+          totalAnswered: parsedStats.totalAnswered || 0,
+          correctCount: parsedStats.correctCount || 0,
+          wrongQuestionIds: parsedStats.wrongQuestionIds || [],
+          practiceProgress: parsedStats.practiceProgress || { '单选题': 0, '多选题': 0, '判断题': 0 },
+          favoriteQuestionIds: parsedStats.favoriteQuestionIds || []
+        };
+      } catch (e) {
+        console.warn('Failed to parse saved stats:', e);
+      }
+    }
+    return {
       totalAnswered: 0,
       correctCount: 0,
       wrongQuestionIds: [],
-      practiceProgress: { '单选题': 0, '多选题': 0, '判断题': 0 }
+      practiceProgress: { '单选题': 0, '多选题': 0, '判断题': 0 },
+      favoriteQuestionIds: []
     };
   });
 
@@ -68,17 +84,32 @@ const App: React.FC = () => {
     }));
   }, []);
 
+  const toggleFavorite = useCallback((questionId: string) => {
+    setStats(prev => {
+      const isFavorited = prev.favoriteQuestionIds.includes(questionId);
+      const newFavoriteIds = isFavorited
+        ? prev.favoriteQuestionIds.filter(id => id !== questionId)
+        : [...prev.favoriteQuestionIds, questionId];
+      
+      return {
+        ...prev,
+        favoriteQuestionIds: newFavoriteIds
+      };
+    });
+  }, []);
+
   return (
     <Layout currentModule={currentModule} onNavigate={setCurrentModule}>
       {currentModule === 'home' && (
-        <Home stats={stats} onNavigate={setCurrentModule} />
+        <Home stats={stats} onNavigate={setCurrentModule} onToggleFavorite={toggleFavorite} />
       )}
       {currentModule === 'practice' && (
         <Practice 
           questions={RAW_QUESTIONS} 
           stats={stats} 
           onUpdateStats={updateStats} 
-          onUpdateProgress={setPracticeProgress} 
+          onUpdateProgress={setPracticeProgress}
+          onToggleFavorite={toggleFavorite}
         />
       )}
       {currentModule === 'exam' && (
@@ -87,19 +118,25 @@ const App: React.FC = () => {
           examState={examState} 
           setExamState={setExamState} 
           onUpdateStats={updateStats}
+          stats={stats}
+          onToggleFavorite={toggleFavorite}
         />
       )}
       {currentModule === 'wrong' && (
         <WrongQuestions 
           allQuestions={RAW_QUESTIONS} 
           wrongIds={stats.wrongQuestionIds} 
-          onUpdateStats={updateStats} 
+          onUpdateStats={updateStats}
+          stats={stats}
+          onToggleFavorite={toggleFavorite}
         />
       )}
       {currentModule === 'random' && (
         <RandomPractice 
           questions={RAW_QUESTIONS} 
-          onUpdateStats={updateStats} 
+          onUpdateStats={updateStats}
+          stats={stats}
+          onToggleFavorite={toggleFavorite}
         />
       )}
     </Layout>

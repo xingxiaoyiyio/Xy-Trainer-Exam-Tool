@@ -1,16 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { Question } from '../types';
-import { CheckCircle2, XCircle, Info } from 'lucide-react';
+import { CheckCircle2, XCircle, Info, Heart } from 'lucide-react';
 
 interface QuestionCardProps {
   question: Question;
   onAnswer: (isCorrect: boolean, selected: string) => void;
   showExplanation?: boolean;
   userAnswer?: string;
+  isFavorited?: boolean;
+  onToggleFavorite?: (questionId: string) => void;
 }
 
-export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onAnswer, showExplanation: alwaysShowExpl, userAnswer: propUserAnswer }) => {
+export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onAnswer, showExplanation: alwaysShowExpl, userAnswer: propUserAnswer, isFavorited = false, onToggleFavorite }) => {
   const [selected, setSelected] = useState<string[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -69,7 +71,30 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onAnswer, 
         }`}>
           {question.type === 'true_false' ? '判断题' : question.type}
         </span>
-        <span className="text-slate-300 text-sm font-medium">ID: {question.question_id}</span>
+        <div className="flex items-center gap-3">
+          {question.qgroup && (
+            <span className="text-xs text-slate-400 bg-slate-50 px-2 py-1 rounded-md font-medium">
+              {question.qgroup}
+            </span>
+          )}
+          <span className="text-slate-300 text-sm font-medium">ID: {question.question_id}</span>
+          {onToggleFavorite && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFavorite(question.question_id);
+              }}
+              className={`p-1 rounded-full transition-colors ${
+                isFavorited 
+                  ? 'text-red-500 hover:text-red-600' 
+                  : 'text-slate-300 hover:text-red-500'
+              }`}
+              title={isFavorited ? '取消收藏' : '收藏'}
+            >
+              <Heart size={16} fill={isFavorited ? 'currentColor' : 'none'} />
+            </button>
+          )}
+        </div>
       </div>
 
       <h3 className="text-lg font-bold leading-relaxed text-slate-800">

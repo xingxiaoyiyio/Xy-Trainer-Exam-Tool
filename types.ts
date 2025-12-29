@@ -8,6 +8,7 @@ export interface Question {
   options: string[];
   answer: string;
   explanation: string;
+  qgroup: string;
 }
 
 export interface UserStats {
@@ -15,6 +16,7 @@ export interface UserStats {
   correctCount: number;
   wrongQuestionIds: string[];
   practiceProgress: Record<string, number>; // type -> index
+  favoriteQuestionIds: string[];
 }
 
 export interface ExamState {

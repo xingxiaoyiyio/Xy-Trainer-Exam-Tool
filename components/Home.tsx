@@ -3,14 +3,15 @@ import React from 'react';
 import { UserStats } from '../types';
 import { RAW_QUESTIONS } from '../questions_data';
 // Fix: Added Shuffle and BookOpen to the import list from lucide-react
-import { Brain, Trophy, Target, History, Sparkles, Shuffle, BookOpen } from 'lucide-react';
+import { Brain, Trophy, Target, History, Sparkles, Shuffle, BookOpen, Heart } from 'lucide-react';
 
 interface HomeProps {
   stats: UserStats;
   onNavigate: (module: 'home' | 'practice' | 'exam' | 'wrong' | 'random') => void;
+  onToggleFavorite?: (questionId: string) => void;
 }
 
-export const Home: React.FC<HomeProps> = ({ stats, onNavigate }) => {
+export const Home: React.FC<HomeProps> = ({ stats, onNavigate, onToggleFavorite }) => {
   const accuracy = stats.totalAnswered === 0 
     ? 0 
     : Math.round((stats.correctCount / stats.totalAnswered) * 100);
@@ -23,7 +24,16 @@ export const Home: React.FC<HomeProps> = ({ stats, onNavigate }) => {
       <section className="tech-gradient rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
         <Sparkles className="absolute -right-4 -top-4 opacity-20 w-32 h-32" />
         <div className="relative z-10">
-          <p className="text-indigo-100 text-sm font-medium mb-1">备考进度总览</p>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-indigo-100 text-sm font-medium">备考进度总览</p>
+            <button
+              onClick={() => onNavigate('practice')}
+              className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg flex items-center gap-2 text-xs font-medium transition-colors"
+            >
+              <Heart size={14} fill="currentColor" />
+              <span>{stats.favoriteQuestionIds?.length || 0}</span>
+            </button>
+          </div>
           <div className="flex items-end justify-between mb-4">
             <h2 className="text-4xl font-extrabold">{progress}%</h2>
             <div className="text-right">
@@ -106,6 +116,8 @@ export const Home: React.FC<HomeProps> = ({ stats, onNavigate }) => {
           </div>
         )}
       </section>
+
+
     </div>
   );
 };

@@ -9,9 +9,10 @@ interface PracticeProps {
   stats: UserStats;
   onUpdateStats: (isCorrect: boolean, questionId: string) => void;
   onUpdateProgress: (type: string, index: number) => void;
+  onToggleFavorite: (questionId: string) => void;
 }
 
-export const Practice: React.FC<PracticeProps> = ({ questions, stats, onUpdateStats, onUpdateProgress }) => {
+export const Practice: React.FC<PracticeProps> = ({ questions, stats, onUpdateStats, onUpdateProgress, onToggleFavorite }) => {
   const [activeType, setActiveType] = useState<string>('单选题');
   const [showAnswerCard, setShowAnswerCard] = useState<boolean>(false);
   
@@ -83,6 +84,8 @@ export const Practice: React.FC<PracticeProps> = ({ questions, stats, onUpdateSt
         <QuestionCard 
           question={currentQuestion} 
           onAnswer={(isCorrect) => onUpdateStats(isCorrect, currentQuestion.question_id)}
+          isFavorited={stats.favoriteQuestionIds.includes(currentQuestion.question_id)}
+          onToggleFavorite={onToggleFavorite}
         />
       ) : (
         <div className="bg-white rounded-3xl p-12 text-center text-slate-400 shadow-sm border border-slate-100">

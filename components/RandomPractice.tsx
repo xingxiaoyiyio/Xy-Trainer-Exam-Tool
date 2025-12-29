@@ -1,15 +1,17 @@
 
 import React, { useState, useMemo } from 'react';
-import { Question } from '../types';
+import { Question, UserStats } from '../types';
 import { QuestionCard } from './QuestionCard';
 import { Shuffle } from 'lucide-react';
 
 interface RandomProps {
   questions: Question[];
   onUpdateStats: (isCorrect: boolean, questionId: string) => void;
+  onToggleFavorite?: (questionId: string) => void;
+  stats: UserStats;
 }
 
-export const RandomPractice: React.FC<RandomProps> = ({ questions, onUpdateStats }) => {
+export const RandomPractice: React.FC<RandomProps> = ({ questions, onUpdateStats, onToggleFavorite, stats }) => {
   const [currentIdx, setCurrentIdx] = useState(0);
   
   const shuffled = useMemo(() => 
@@ -31,7 +33,9 @@ export const RandomPractice: React.FC<RandomProps> = ({ questions, onUpdateStats
 
       <QuestionCard 
         question={shuffled[currentIdx]} 
-        onAnswer={(isCorrect) => onUpdateStats(isCorrect, shuffled[currentIdx].question_id)} 
+        onAnswer={(isCorrect) => onUpdateStats(isCorrect, shuffled[currentIdx].question_id)}
+        isFavorited={stats.favoriteQuestionIds.includes(shuffled[currentIdx].question_id)}
+        onToggleFavorite={onToggleFavorite}
       />
 
       <button

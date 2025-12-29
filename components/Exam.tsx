@@ -1,6 +1,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { Question, ExamState } from '../types';
+import { Question, ExamState, UserStats } from '../types';
 import { EXAM_CONFIG } from '../constants';
 import { QuestionCard } from './QuestionCard';
 import { Clock, Send, AlertCircle, CheckCircle } from 'lucide-react';
@@ -10,9 +10,11 @@ interface ExamProps {
   examState: ExamState;
   setExamState: React.Dispatch<React.SetStateAction<ExamState>>;
   onUpdateStats: (isCorrect: boolean, questionId: string) => void;
+  onToggleFavorite?: (questionId: string) => void;
+  stats: UserStats;
 }
 
-export const Exam: React.FC<ExamProps> = ({ questions, examState, setExamState, onUpdateStats }) => {
+export const Exam: React.FC<ExamProps> = ({ questions, examState, setExamState, onUpdateStats, onToggleFavorite, stats }) => {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -189,6 +191,8 @@ export const Exam: React.FC<ExamProps> = ({ questions, examState, setExamState, 
         question={examState.questions[currentIdx]} 
         onAnswer={onAnswer} 
         userAnswer={examState.userAnswers[currentIdx]}
+        isFavorited={stats.favoriteQuestionIds.includes(examState.questions[currentIdx].question_id)}
+        onToggleFavorite={onToggleFavorite}
       />
 
       <div className="flex gap-4">

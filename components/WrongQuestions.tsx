@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { Question } from '../types';
+import { Question, UserStats } from '../types';
 import { QuestionCard } from './QuestionCard';
 import { ChevronLeft, ChevronRight, Ghost, Grid3X3, X } from 'lucide-react';
 
@@ -8,9 +8,11 @@ interface WrongQuestionsProps {
   allQuestions: Question[];
   wrongIds: string[];
   onUpdateStats: (isCorrect: boolean, questionId: string) => void;
+  onToggleFavorite?: (questionId: string) => void;
+  stats: UserStats;
 }
 
-export const WrongQuestions: React.FC<WrongQuestionsProps> = ({ allQuestions, wrongIds, onUpdateStats }) => {
+export const WrongQuestions: React.FC<WrongQuestionsProps> = ({ allQuestions, wrongIds, onUpdateStats, onToggleFavorite, stats }) => {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [showAnswerCard, setShowAnswerCard] = useState<boolean>(false);
 
@@ -75,7 +77,9 @@ export const WrongQuestions: React.FC<WrongQuestionsProps> = ({ allQuestions, wr
 
       <QuestionCard 
         question={currentQuestion} 
-        onAnswer={handleAnswer} 
+        onAnswer={handleAnswer}
+        isFavorited={stats.favoriteQuestionIds.includes(currentQuestion.question_id)}
+        onToggleFavorite={onToggleFavorite}
       />
 
       <div className="flex gap-4">
