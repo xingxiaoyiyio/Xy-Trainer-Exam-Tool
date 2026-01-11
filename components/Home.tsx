@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { EXAM_CONFIG } from '../constants';
 import { UserStats } from '../types';
 import { RAW_QUESTIONS } from '../questions_data';
 // Fix: Added Shuffle and BookOpen to the import list from lucide-react
@@ -66,7 +67,7 @@ export const Home: React.FC<HomeProps> = ({ stats, onNavigate, onToggleFavorite 
         <MenuCard 
           icon={<Trophy className="text-amber-500" />} 
           title="模拟考试" 
-          desc="限时190题" 
+          desc={`限时${EXAM_CONFIG.TOTAL_QUESTIONS}题`} 
           color="bg-amber-50"
           onClick={() => onNavigate('exam')}
         />

@@ -18,7 +18,16 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onAnswer, 
 
   useEffect(() => {
     // Reset state when question changes
-    setSelected(propUserAnswer ? (question.type === '多选题' ? propUserAnswer.split(',') : [propUserAnswer]) : []);
+    if (propUserAnswer) {
+      if (question.type === '多选题') {
+        // For multiple choice, split into individual characters
+        setSelected(propUserAnswer.split(''));
+      } else {
+        setSelected([propUserAnswer]);
+      }
+    } else {
+      setSelected([]);
+    }
     setIsSubmitted(!!propUserAnswer);
   }, [question.question_id, propUserAnswer]);
 
@@ -39,7 +48,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onAnswer, 
 
   const handleMultiSubmit = () => {
     if (selected.length === 0 || isSubmitted) return;
-    const sortedSelected = [...selected].sort().join(', ');
+    const sortedSelected = [...selected].sort().join('');
     const isCorrect = sortedSelected === question.answer;
     setIsSubmitted(true);
     onAnswer(isCorrect, sortedSelected);

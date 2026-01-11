@@ -12,6 +12,22 @@ import { STORAGE_KEYS } from './constants';
 
 const App: React.FC = () => {
   const [currentModule, setCurrentModule] = useState<'home' | 'practice' | 'exam' | 'wrong' | 'random'>('home');
+
+  // Clear exam cache when switching to exam module
+  const navigateToExam = () => {
+    // Clear any existing exam state from localStorage
+    localStorage.removeItem(STORAGE_KEYS.EXAM);
+    // Reset the exam state in component
+    setExamState({
+      isActive: false,
+      questions: [],
+      userAnswers: {},
+      timeRemaining: 0,
+      startTime: 0
+    });
+    // Navigate to exam module
+    setCurrentModule('exam');
+  };
   const [stats, setStats] = useState<UserStats>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.STATS);
     if (saved) {
@@ -101,7 +117,7 @@ const App: React.FC = () => {
   return (
     <Layout currentModule={currentModule} onNavigate={setCurrentModule}>
       {currentModule === 'home' && (
-        <Home stats={stats} onNavigate={setCurrentModule} onToggleFavorite={toggleFavorite} />
+        <Home stats={stats} onNavigate={(module) => module === 'exam' ? navigateToExam() : setCurrentModule(module)} onToggleFavorite={toggleFavorite} />
       )}
       {currentModule === 'practice' && (
         <Practice 

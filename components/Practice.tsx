@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Question, UserStats } from '../types';
 import { QuestionCard } from './QuestionCard';
@@ -19,6 +18,7 @@ export const Practice: React.FC<PracticeProps> = ({ questions, stats, onUpdateSt
   const filteredQuestions = useMemo(() => {
     return questions.filter(q => {
         if (activeType === '判断题') return q.type === 'true_false' || q.type === '判断题';
+        if (activeType === '模拟题') return q.qgroup === '理论题模拟题';
         return q.type === activeType;
     });
   }, [activeType, questions]);
@@ -46,14 +46,12 @@ export const Practice: React.FC<PracticeProps> = ({ questions, stats, onUpdateSt
   return (
     <div className="space-y-6">
       {/* Type Selector */}
-      <div className="flex bg-white p-1 rounded-2xl shadow-sm border border-slate-100">
-        {['单选题', '多选题', '判断题'].map(type => (
+      <div className="flex bg-white p-1 rounded-2xl shadow-sm border border-slate-100 overflow-x-auto">
+        {['单选题', '多选题', '判断题', '模拟题'].map(type => (
           <button
             key={type}
             onClick={() => setActiveType(type)}
-            className={`flex-1 py-2 text-sm font-bold rounded-xl transition-all ${
-              activeType === type ? 'tech-gradient text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'
-            }`}
+            className={`flex-shrink-0 py-2 px-4 text-sm font-bold rounded-xl transition-all ${activeType === type ? 'tech-gradient text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
           >
             {type}
           </button>
@@ -131,11 +129,7 @@ export const Practice: React.FC<PracticeProps> = ({ questions, stats, onUpdateSt
                 <button
                   key={index}
                   onClick={() => handleJumpToQuestion(index)}
-                  className={`aspect-square rounded-xl font-bold text-sm transition-all ${
-                    index === currentIndex
-                      ? 'bg-indigo-500 text-white shadow-lg scale-110'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
+                  className={`aspect-square rounded-xl font-bold text-sm transition-all ${index === currentIndex ? 'bg-indigo-500 text-white shadow-lg scale-110' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
                 >
                   {index + 1}
                 </button>

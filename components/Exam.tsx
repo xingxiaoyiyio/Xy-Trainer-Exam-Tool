@@ -1,7 +1,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { Question, ExamState, UserStats } from '../types';
-import { EXAM_CONFIG } from '../constants';
+import { EXAM_CONFIG, STORAGE_KEYS } from '../constants';
 import { QuestionCard } from './QuestionCard';
 import { Clock, Send, AlertCircle, CheckCircle } from 'lucide-react';
 
@@ -23,7 +23,7 @@ export const Exam: React.FC<ExamProps> = ({ questions, examState, setExamState, 
   const startExam = () => {
     const drawn: Question[] = [];
     
-    // Draw based on distribution
+    // Draw based on distribution from the latest configuration
     Object.entries(EXAM_CONFIG.DISTRIBUTION).forEach(([type, count]) => {
       const pool = questions.filter(q => {
           if (type === 'true_false') return q.type === 'true_false' || q.type === '判断题';
@@ -33,6 +33,7 @@ export const Exam: React.FC<ExamProps> = ({ questions, examState, setExamState, 
       drawn.push(...shuffled.slice(0, count));
     });
 
+    // Clear any existing exam state and start fresh
     setExamState({
       isActive: true,
       questions: drawn.sort(() => 0.5 - Math.random()),
@@ -107,8 +108,8 @@ export const Exam: React.FC<ExamProps> = ({ questions, examState, setExamState, 
           <h2 className="text-2xl font-black text-slate-800">考试模式</h2>
           <p className="text-slate-500 mt-2 text-sm leading-relaxed">
             系统将为您抽取 {EXAM_CONFIG.TOTAL_QUESTIONS} 道题目：<br/>
-            40道判断题 (0.5分/题)<br/>
-            140道单选题 (0.5分/题)<br/>
+            10道判断题 (1分/题)<br/>
+            80道单选题 (1分/题)<br/>
             10道多选题 (1分/题)<br/>
             总计 100分，限时 90 分钟。
           </p>
